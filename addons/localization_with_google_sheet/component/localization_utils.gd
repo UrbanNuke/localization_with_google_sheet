@@ -15,6 +15,9 @@
 #   assert(localization_utils.sanitize("1abc") == "_1abc")
 
 extends Node
+class_name localization_utils
+
+const ROOT_FOLDER: String = "res://data/localization/"
 
 static func get_csv_export_url(url: String) -> String:
 	if url.find("/pub?") != -1 or url.find("/export?") != -1:
@@ -42,3 +45,29 @@ static func sanitize(raw: String) -> String:
 	if not clean.is_valid_identifier():
 		clean = "_" + clean
 	return clean
+	
+static func normalize_csv(text: String) -> String:
+	var result = ""
+	var in_quotes = false
+
+	for i in text.length():
+		var c = text[i]
+
+		if c == '"':
+			in_quotes = !in_quotes
+			result += c
+		elif c == '\n':
+			if in_quotes:
+				result += "\\n"
+			else:
+				result += "\n"
+		elif c == '\r':
+			continue
+		else:
+			result += c
+
+	return result
+	
+static func get_root_folder() -> String:
+	var root_folder = ProjectSettings.get_setting("localization_with_google_sheet/root_folder", ROOT_FOLDER)
+	return root_folder

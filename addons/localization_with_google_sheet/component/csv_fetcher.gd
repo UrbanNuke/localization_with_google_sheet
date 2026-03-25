@@ -45,7 +45,7 @@ func _on_request_completed(result: int, response_code: int, headers: Array, body
 	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
 		var f = FileAccess.open(csv_path, FileAccess.WRITE)
 		if f:
-			f.store_string(body.get_string_from_utf8())
+			f.store_string(localization_utils.normalize_csv(body.get_string_from_utf8()))
 			f.close()
 	emit_signal("csv_fetched", result, response_code, headers, body, csv_path)
 	req.queue_free()
