@@ -16,8 +16,6 @@
 @tool
 extends Node
 
-const CSV_BASE_DIR := "res://data/localization"
-
 func process_translations_for(csv_path: String, workspace: String) -> bool:
 	var f = FileAccess.open(csv_path, FileAccess.READ)
 	if not f:
@@ -43,7 +41,7 @@ func process_translations_for(csv_path: String, workspace: String) -> bool:
 		return false
 
 	var existing = ProjectSettings.get_setting("internationalization/locale/translations", []) as Array
-	var prefix = "%s/%s" % [CSV_BASE_DIR, workspace]
+	var prefix = "%s/%s" % [localization_utils.get_root_folder(), workspace]
 	for old in existing.duplicate():
 		if old.begins_with(prefix):
 			existing.erase(old)

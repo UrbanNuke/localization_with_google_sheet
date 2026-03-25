@@ -14,8 +14,8 @@
 @tool
 extends EditorPlugin
 
-const CSV_BASE_DIR := "res://data/localization"
 const WS_SETTING := "localization_with_google_sheet/workspaces"
+const ROOT_FOLDER_SETTING := "localization_with_google_sheet/root_folder"
 
 # Component instances
 var workspace_manager
@@ -59,6 +59,16 @@ func _enter_tree() -> void:
 	add_child(layout_manager)
 	if not ProjectSettings.has_setting(WS_SETTING):
 		ProjectSettings.set_setting(WS_SETTING, [])
+		
+	if not ProjectSettings.has_setting(ROOT_FOLDER_SETTING):
+		ProjectSettings.set_setting(ROOT_FOLDER_SETTING, localization_utils.ROOT_FOLDER)
+		
+	ProjectSettings.add_property_info({
+		"name": ROOT_FOLDER_SETTING,
+		"type": TYPE_STRING,
+		"hint": PROPERTY_HINT_DIR
+	})
+		
 	add_tool_menu_item("Localization", Callable(self, "_on_localization_menu_item_pressed"))
 
 func _exit_tree() -> void:
@@ -311,11 +321,12 @@ func _on_refresh_workspace(idx: int) -> void:
 	status_label.text = "Fetching “%s”…" % entry["name"]
 	var ws = entry["name"].strip_edges().replace(" ", "_")
 	var proj = ProjectSettings.get_setting("application/config/name", "Project").strip_edges().replace(" ", "_")
-	var ws_dir = "%s/%s" % [CSV_BASE_DIR, ws]
+	var ws_dir = "%s/%s" % [localization_utils.get_root_folder(), ws]
+	
 	var csv_path = "%s/%s_%s_translation.csv" % [ws_dir, proj, ws]
 	if not DirAccess.dir_exists_absolute(ws_dir):
 		DirAccess.make_dir_recursive_absolute(ws_dir)
-	var csv_url = load("res://addons/localization_with_google_sheet/component/localization_utils.gd").get_csv_export_url(entry["url"])
+	var csv_url = localization_utils.get_csv_export_url(entry["url"])
 	if csv_fetcher.is_connected("csv_fetched", Callable(self, "_on_csv_fetched")):
 		csv_fetcher.disconnect("csv_fetched", Callable(self, "_on_csv_fetched"))
 	csv_fetcher.connect("csv_fetched", Callable(self, "_on_csv_fetched"), CONNECT_ONE_SHOT)

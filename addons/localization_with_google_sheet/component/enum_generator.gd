@@ -49,13 +49,13 @@ func generate_enum_for(csv_path: String, workspace: String, plugin_dir: String, 
 
 	var gd_out = ["# Auto-generated %s\n"%enum_name, "extends Node\n\n", "enum %s {\n"%enum_name]
 	for k in keys:
-		var id = _sanitize(k)
+		var id = localization_utils.sanitize(k)
 		if id != "": gd_out.append("\t%s,\n"%id)
 	gd_out.append("}\n")
 
 	var cs_out = ["namespace Localization {\n", "\tpublic enum %s {\n"%enum_name_cs]
 	for k in keys:
-		var id = _sanitize(k)
+		var id = localization_utils.sanitize(k)
 		if id != "": cs_out.append("\t\t%s,\n"%id)
 	cs_out.append("\t}\n}\n")
 
@@ -78,13 +78,3 @@ func generate_enum_for(csv_path: String, workspace: String, plugin_dir: String, 
 	resource_fs.update_file(cs_p)
 	resource_fs.scan()
 	return true
-
-func _sanitize(raw: String) -> String:
-	var re = RegEx.new()
-	re.compile("[^A-Za-z0-9_]")
-	var clean = re.sub(raw, "", true)
-	if clean.length() > 0 and clean.substr(0, 1) >= "0" and clean.substr(0, 1) <= "9":
-		clean = "_" + clean
-	if not clean.is_valid_identifier():
-		clean = "_" + clean
-	return clean
