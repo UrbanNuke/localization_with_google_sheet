@@ -71,3 +71,14 @@ static func normalize_csv(text: String) -> String:
 static func get_root_folder() -> String:
 	var root_folder = ProjectSettings.get_setting("localization_with_google_sheet/root_folder", ROOT_FOLDER)
 	return root_folder
+	
+static func to_pascal_case(input: String) -> String:
+	var regex = RegEx.new()
+	regex.compile("[A-Za-z0-9]+")
+	var words = regex.search_all(input)
+	var result = ""
+	for word in words:
+		var w = word.get_string()
+		result += w.substr(0, 1).to_upper() + w.substr(1)
+		
+	return result

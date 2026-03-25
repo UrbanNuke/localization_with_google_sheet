@@ -35,7 +35,8 @@ func generate_enum_for(csv_path: String, workspace: String, plugin_dir: String, 
 		return false
 
 	var enum_name = "%s_localization_key"%workspace
-	var enum_name_cs = "%s_LocalizationKey"%workspace
+	var enum_name_cs = "%sLocalizationKey"%workspace
+	enum_name_cs = localization_utils.to_pascal_case(enum_name_cs)
 	var keys: Array = []
 	for i in range(1, lines.size()):
 		var row = lines[i].strip_edges()
